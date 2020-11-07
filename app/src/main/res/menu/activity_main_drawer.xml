@@ -13,8 +13,16 @@
             android:icon="@drawable/gyroscope"
             android:title="Gyroscope" />
         <item
+            android:id="@+id/nav_accelerometer"
+            android:icon="@drawable/accelerometer"
+            android:title="Accelerometer" />
+        <item
             android:id="@+id/nav_touch"
             android:icon="@drawable/touch"
             android:title="Touch" />
+        <item
+            android:id="@+id/nav_battery"
+            android:icon="@drawable/battery"
+            android:title="Battery" />
     </group>
 </menu>

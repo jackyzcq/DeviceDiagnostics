@@ -22,4 +22,15 @@
         android:name="org.silvermoon.devicediagnostics.ui.TouchSensorFragment"
         android:label="Touch"
          />
+
+    <fragment
+        android:id="@+id/nav_accelerometer"
+        android:name="org.silvermoon.devicediagnostics.ui.AccelerometerFragment"
+        android:label="Accelerometer"
+        tools:layout="@layout/fragment_accelerometer" />
+    <fragment
+        android:id="@+id/nav_battery"
+        android:name="org.silvermoon.devicediagnostics.ui.BatteryFragment"
+        android:label="Battery"
+        tools:layout="@layout/fragment_battery" />
 </navigation>
