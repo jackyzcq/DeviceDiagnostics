@@ -24,5 +24,45 @@
             android:id="@+id/nav_battery"
             android:icon="@drawable/battery"
             android:title="Battery" />
+        <item
+            android:id="@+id/nav_bluetooth"
+            android:icon="@drawable/bluetooth"
+            android:title="Bluetooth" />
+        <item
+            android:id="@+id/nav_flash"
+            android:icon="@drawable/flash"
+            android:title="Flash" />
+        <item
+            android:id="@+id/nav_gravity"
+            android:icon="@drawable/gravity"
+            android:title="Gravity" />
+        <item
+            android:id="@+id/nav_headphone"
+            android:icon="@drawable/headphone"
+            android:title="Headphone" />
+        <item
+            android:id="@+id/nav_lightsensor"
+            android:icon="@drawable/lightsensor"
+            android:title="Light sensor" />
+        <item
+            android:id="@+id/nav_magnet"
+            android:icon="@drawable/magnet"
+            android:title="Magnet" />
+        <item
+            android:id="@+id/nav_microphone"
+            android:icon="@drawable/microphone"
+            android:title="Microphone" />
+        <item
+            android:id="@+id/nav_pressure"
+            android:icon="@drawable/pressure"
+            android:title="Pressure" />
+        <item
+            android:id="@+id/nav_proximity"
+            android:icon="@drawable/proximity"
+            android:title="Proximity" />
+        <item
+            android:id="@+id/nav_vibration"
+            android:icon="@drawable/vibrate"
+            android:title="Vibration" />
     </group>
 </menu>

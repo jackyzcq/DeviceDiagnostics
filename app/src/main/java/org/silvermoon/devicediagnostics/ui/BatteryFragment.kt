@@ -17,8 +17,7 @@ import org.silvermoon.devicediagnostics.R
 
 class BatteryFragment : Fragment() {
 
-
-
+    
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
