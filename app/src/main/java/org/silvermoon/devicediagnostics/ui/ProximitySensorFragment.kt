@@ -1,60 +1,83 @@
 package org.silvermoon.devicediagnostics.ui
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import kotlinx.android.synthetic.main.fragment_light_senor.*
+import kotlinx.android.synthetic.main.fragment_proximity_sensor.*
 import org.silvermoon.devicediagnostics.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [ProximitySensorFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ProximitySensorFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class ProximitySensorFragment : Fragment(), SensorEventListener {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    lateinit var sensmgr: SensorManager
+    var lightSenor: Sensor? = null
+    lateinit var sensorvalues: FloatArray
+    val TAG = "ProximitySensorFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        sensmgr=requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager;
+        lightSenor=sensmgr.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
+        if(lightSenor == null){
+            Toast.makeText(requireContext(),"No proximity sensor found", Toast.LENGTH_SHORT).show()
+        }
+
+
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_proximity_sensor, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProximitySensorFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProximitySensorFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onResume() {
+        sensmgr.registerListener(this, lightSenor, SensorManager.SENSOR_DELAY_NORMAL)
+        super.onResume()
     }
+
+
+    override fun onPause() {
+        sensmgr.unregisterListener(this)
+        super.onPause()
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        // The Proximity sensor returns a single value either 0 or 5(also 1 depends on Sensor manufacturer).
+        // 0 for near and 5 for far
+        if(event!!.sensor.type==Sensor.TYPE_PROXIMITY){
+            sensorvalues = event!!.values
+
+            if(sensorvalues[0]==0f){
+                tVProximity.setText("You are Near: "+ event.values[0].toString());
+            }
+            else{
+                tVProximity.setText("You are Far: "+event.values[0].toString());
+            }
+
+        }}
+
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+        Log.i(TAG, "onAccuracyChanged: ")
+    }
+
+
+
 }

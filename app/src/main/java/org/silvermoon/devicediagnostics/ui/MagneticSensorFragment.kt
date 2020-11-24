@@ -1,60 +1,66 @@
 package org.silvermoon.devicediagnostics.ui
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_gyroscope.*
 import org.silvermoon.devicediagnostics.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [MagneticSensorFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MagneticSensorFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+class MagneticSensorFragment : Fragment(), SensorEventListener {
+    lateinit var sensmgr: SensorManager
+    var magnetSensor: Sensor? = null
+    lateinit var sensorvalues: FloatArray
+    val TAG = "MagnetFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        sensmgr=requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager;
+        magnetSensor=sensmgr.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_magnetic_sensor, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MagneticSensorFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MagneticSensorFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onResume() {
+        sensmgr.registerListener(this, magnetSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        super.onResume()
     }
+
+
+    override fun onPause() {
+        sensmgr.unregisterListener(this)
+        super.onPause()
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        sensorvalues = event!!.values
+        val x = sensorvalues[0]
+        val y = sensorvalues[1]
+        val z = sensorvalues[2]
+        tvX.text = "x $x uT"
+        tvY.text = "y $y uT"
+        tvZ.text = "z $z uT"
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+        Log.i(TAG, "onAccuracyChanged: ")
+    }
+
+
 }

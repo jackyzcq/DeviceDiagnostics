@@ -54,12 +54,12 @@
         android:label="Headphone"
         tools:layout="@layout/fragment_headphone" />
     <fragment
-        android:id="@+id/nav_light"
+        android:id="@+id/nav_lightsensor"
         android:name="org.silvermoon.devicediagnostics.ui.LightSenorFragment"
         android:label="Light"
         tools:layout="@layout/fragment_light_senor" />
     <fragment
-        android:id="@+id/nav_magnetic"
+        android:id="@+id/nav_magnet"
         android:name="org.silvermoon.devicediagnostics.ui.MagneticSensorFragment"
         android:label="Magnet"
         tools:layout="@layout/fragment_magnetic_sensor" />
@@ -70,7 +70,7 @@
         tools:layout="@layout/fragment_microphone" />
     <fragment
         android:id="@+id/nav_pressure"
-        android:name="org.silvermoon.devicediagnostics.ui.BatteryFragment"
+        android:name="org.silvermoon.devicediagnostics.ui.PressureSenorFragment"
         android:label="Pressure"
         tools:layout="@layout/fragment_pressure_senor" />
     <fragment

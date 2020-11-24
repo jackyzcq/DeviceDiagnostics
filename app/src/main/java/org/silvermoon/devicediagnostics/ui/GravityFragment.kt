@@ -17,7 +17,7 @@ import org.silvermoon.devicediagnostics.R
 class GravityFragment : Fragment(), SensorEventListener {
 
     lateinit var sensmgr: SensorManager
-    var gyrosensor: Sensor? = null
+    var gravitySensor: Sensor? = null
     lateinit var sensorvalues: FloatArray
     val TAG = "GravityFragment"
 
@@ -27,13 +27,13 @@ class GravityFragment : Fragment(), SensorEventListener {
     ): View? {
         // Inflate the layout for this fragment
         sensmgr=requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager;
-        gyrosensor=sensmgr.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        gravitySensor=sensmgr.getDefaultSensor(Sensor.TYPE_GRAVITY);
 
         return inflater.inflate(R.layout.fragment_gravity, container, false)
     }
 
     override fun onResume() {
-        sensmgr.registerListener(this, gyrosensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensmgr.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_NORMAL)
         super.onResume()
     }
 

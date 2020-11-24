@@ -3,7 +3,6 @@ package org.silvermoon.devicediagnostics.ui
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.hardware.Camera
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
@@ -11,19 +10,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.camera.core.CameraControl
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.android.synthetic.main.fragment_flash.*
 import kotlinx.android.synthetic.main.fragment_flash.view.*
 import org.silvermoon.devicediagnostics.R
 
 
 class FlashFragment : Fragment() {
-    private var camera: Camera? = null
+   private var camera: ListenableFuture<ProcessCameraProvider>? = null
+    private lateinit var cameraControl: CameraControl
+    private lateinit var baseView: View
     private var isFlashOn = false
     private var hasFlash = false
-    var params: android.hardware.Camera.Parameters? = null
     var mp: MediaPlayer? = null
-
+    val TAG = "FlashFragment"
 
 
     override fun onCreateView(
@@ -63,11 +69,11 @@ class FlashFragment : Fragment() {
 
 
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_flash, container, false)
+        baseView = inflater.inflate(R.layout.fragment_flash, container, false)
         /*
                * Switch button click event to toggle flash on/off
                */
-        view.btnSwitch.setOnClickListener(View.OnClickListener {
+        baseView.btnSwitch.setOnClickListener(View.OnClickListener {
             if (isFlashOn) {
                 // turn off flash
                 turnOffFlash()
@@ -76,12 +82,11 @@ class FlashFragment : Fragment() {
                 turnOnFlash()
             }
         })
-        return view
+        return baseView
     }
 
 
-
-  override fun onPause() {
+    override fun onPause() {
         super.onPause()
 
         turnOffFlash()
@@ -101,7 +106,7 @@ class FlashFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         if (camera != null) {
-            camera!!.release()
+            //camera!!.release()
             camera = null
         }
     }
@@ -109,56 +114,89 @@ class FlashFragment : Fragment() {
     private fun getCamera() {
         if (camera == null) {
             try {
-                camera = Camera.open()
-                params = camera!!.getParameters()
+               camera = ProcessCameraProvider.getInstance(requireContext())
+
+
+                camera!!.addListener(Runnable {
+                    // Used to bind the lifecycle of cameras to the lifecycle owner
+                    val cameraProvider: ProcessCameraProvider = camera!!.get()
+
+                    // Preview
+                    val preview = Preview.Builder()
+                        .build()
+                        .also {
+                            it.setSurfaceProvider(viewFinder.createSurfaceProvider())
+                        }
+
+                    // Select back camera as a default
+                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+                    try {
+                        // Unbind use cases before rebinding
+                        cameraProvider.unbindAll()
+
+                        // Bind use cases to camera
+                     cameraControl =   cameraProvider.bindToLifecycle(
+                            this, cameraSelector, preview).cameraControl
+
+
+
+                    } catch(exc: Exception) {
+                        Log.e(TAG, "Use case binding failed", exc)
+                    }
+
+
+
+                }, ContextCompat.getMainExecutor(requireContext()))
+
             } catch (e: RuntimeException) {
-                Toast.makeText(requireContext(),"Camera error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Camera error", Toast.LENGTH_SHORT).show()
             }
         }
+
+        val cameraInfo = camera
+
+
+
     }
+
 
     private fun turnOnFlash() {
         if (!isFlashOn) {
-            if (camera == null || params == null) {
+            if (camera == null || cameraControl == null) {
                 return
             }
-            params = camera!!.getParameters()
-            params!!.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
-            camera!!.setParameters(params)
-            camera!!.startPreview()
+            cameraControl.enableTorch(true)
             isFlashOn = true
 
 
-       //     toggleButtonImage()
+            //     toggleButtonImage()
         }
     }
 
     private fun turnOffFlash() {
         if (isFlashOn) {
-            if (camera == null || params == null) {
+            if (camera == null || cameraControl == null) {
                 return
             }
 
-            params = camera!!.getParameters()
-            params!!.setFlashMode(Camera.Parameters.FLASH_MODE_OFF)
-            camera!!.setParameters(params)
-            camera!!.stopPreview()
+            cameraControl.enableTorch(false)
             isFlashOn = false
 
-          //  toggleButtonImage()
+            //  toggleButtonImage()
         }
     }
-
 
 
     private fun toggleButtonImage() {
         if (isFlashOn) {
-            requireView().btnSwitch.setImageResource(R.drawable.switchon)
+            baseView.btnSwitch.setImageResource(R.drawable.switchon)
         } else {
-            requireView().btnSwitch.setImageResource(R.drawable.switchoff)
+            baseView.btnSwitch.setImageResource(R.drawable.switchoff)
         }
     }
 
-
-
 }
+
+
+
