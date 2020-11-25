@@ -93,10 +93,10 @@ class FlashFragment : Fragment() {
     }
 
 
-    override fun onResume() {
-        super.onResume()
-        if (hasFlash) turnOnFlash()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        if (hasFlash) turnOnFlash()
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -129,7 +129,7 @@ class FlashFragment : Fragment() {
                         }
 
                     // Select back camera as a default
-                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                    val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
 
                     try {
                         // Unbind use cases before rebinding
@@ -172,6 +172,7 @@ class FlashFragment : Fragment() {
 
             //     toggleButtonImage()
         }
+        toggleButtonImage()
     }
 
     private fun turnOffFlash() {
@@ -183,7 +184,7 @@ class FlashFragment : Fragment() {
             cameraControl.enableTorch(false)
             isFlashOn = false
 
-            //  toggleButtonImage()
+              toggleButtonImage()
         }
     }
 
